@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="150-8859">
+<title> LoanPaymentProject</title>
+<style>
+    .form-aline{
+        border: solid 2px #b7ddf2;
+        border-radius: 5px;
+        padding: 15px;
+        background: #b7ff3b;
+        margin: auto;
+        width: 40%;
+    }
+
+
+</style>
+
+
+</head>
+<body>
+ <div class="form-aline">
+    <form name="loanForm">
+        <h2>Loan Payments calculator</h2>
+            <table>
+                <tr><td colspan="2"><b>Enter loan information</b></td></tr>
+                <tr>
+                    <td>loan Amount in currency:</td>
+                    <td><input type="text" name="loanAmt" id="loanAmtId" size="12"
+                        onchange="validateloanAmount();">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Rate of Interest in percentage:</td>
+                    <td><input type="text" name="Interest" id="InterestId" size="12"
+                        onchange="validateNumber(this.id,this.name)">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Repayment period in percentage:</td>
+                    <td><input type="text" name="years" id="yearsId" size="12"
+                        onchange=" validatePeriod(this.id);">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" value="Compute" onclick="calculatePayment();">
+                      </td>
+                </tr>
+                </table>
+                <br>
+                <table>
+                    <tr>
+                        <td colspan="3">
+                         <b>Payment information</b>
+                        </td>
+                   </tr>
+                   <tr>
+                     <td>Monthly Payment:</td>
+                     <td><input type="text" name="monthlyPayment" id="monthlypaymentId" size="12" disabled></td>
+                  </tr>
+                    <tr>
+                        <td>Total Payment:</td>
+                        <td><input type="text" name="totalPayment" id="totalPaymentId" size="12" disabled></td>
+                    </tr>
+                    <tr>
+                        <td>Total Interest Payment:</td>
+                        <td><input type="text" name="totalinterest" id="totalinterestId" size="12" disabled ></td>
+                    </tr>
+                </table>
+            </form>
+       </div>
+       <script type="text/javascript">
+          function validateloanAmount(){
+             var loanAmt = document.getElementById("loanAmtId").value 
+               // if amount of loan is not  a number and more than 15 lakhs
+               if(isNaN(loanAmt)){
+                alert("Loan Amount Should be a Number");
+                document.getElementById("loanAmtId").focus();
+                document.getElementById("loanAmtId").select();
+                return false;
+               } else if( loanAmt > 1500000) {
+                alert("loan amount should not be more than 15 lakhs.");
+                document.getElementById("loanAmtId").focus();
+                document.getElementById("loanAmtId").select();
+                return false;
+               }
+            }
+               function validateNumber(elementId,elementName) {
+                var elementvalue = document.getElementById(elementId).value;
+                var numbers = /^[0-9]+$/;
+                //iff element value is not a number
+                if (!elementvalue.match(numbers)){
+                    alert(elementName+" should be number")
+                    document.getElementById(elementId).focus();
+                    document.getElementById(elementId).select();
+                    return false;
+                }
+               }
+              function validatePeriod(elementId){
+                var period = document.getElementById(elementId).value;
+                //if period is not a number and not between 7 years to 15 years
+                if (isNaN(period)){
+                    alert("Period should be a Number")
+                    document.getElementById(elementId).focus();
+                    document.getElementById(elementId).select();
+                    return false;
+                } else if ((period < 7) || (period > 15)){
+                    alert("Repayment period should be between 7years to 15 years.");
+                    document.getElementById(elementId).focus();
+                    document.getElementById(elementId).select();
+                    return false;
+                }
+              }
+
+              function calculatePayment(){
+              // monthly Payment formula =[P x R x (1+R)^N]/[(1+R)^N-1]
+              var loanAmount = document.loanForm.loanAmt.value;
+              var Intrest = document.loanForm.Interest.value;
+              var period = document.loanForm.years.value;
+
+              //convert interest from a percentage to a decimal
+              var monthlyInterest = (Intrest/100)/12;
+
+              //convert  from an annual rate to a monthly rate
+              var payments =  period * 12;
+
+              //Now compute the monthly payment figure, using esoteric math
+               var x = Math.pow(1 + monthlyInterest, payments);
+               var monthly = (loanAmount*x*monthlyInterest)/(x-1);
+                
+               //check that the result is a finite number. if so, display the result.
+               if (!isNaN(monthly) &&
+               (monthly != Number.POSITIVE_INFINITY) &&
+               (monthly != Number.NEGATIVE_INFINITY)) {
+
+                document.loanForm.monthlyPayment.value = round(monthly);
+                document.loanForm.totalPayment.value = round(monthly * payments);
+                document.loanForm.totalinterest.value = round((monthly * payments) - loanAmount);
+
+
+
+                document.getElementById("monthlyPaymentId").readOnly = true;
+                document.getElementById("totalPaymentId").readOnly = true;
+                document.getElementById("totalinterestId").readOnly = true;
+                } 
+                else{
+                // display empty values
+                document.loanForm.monthlyPayment.value ="";
+                document.loanForm.totalPayment.value ="";
+                document.loanForm.totalinterest.value ="";
+               }
+            }
+               // this function rounds a number to teo decmial places
+               function round(x) {
+                return Math.round(x*100)/100;
+               }
+    </script> 
+
+    </body>
+   
+</html>
